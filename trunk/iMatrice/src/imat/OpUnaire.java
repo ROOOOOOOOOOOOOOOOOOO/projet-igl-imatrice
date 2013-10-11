@@ -82,7 +82,69 @@ public class OpUnaire {
         for (int i=0;i<a.getNbLigne();i++) {
             det = det * a.getElements()[i][i];
         }
-        return det;
+        return Math.round(det);
+    }
+    
+    public float cofacteur(Matrice l,int i,int j){
+        // boolean continu=true;
+         int  x=0,w=0;
+         int signe;
+         Matrice c=new Matrice(l.getNbLigne()-1,l.getNbColonne()-1);
+         OpUnaire op=new OpUnaire();
+         for (int k=0;k<l.getNbLigne();k++){
+            for (int m=0;m<l.getNbColonne();m++){
+                if (k!=i & m!=j){
+                    c.remplir_case(c, x,w,l.soustraire_val(l, k, m)) ;
+                    w++;
+                }                            
+            }
+            w=0;
+            if (k==i){
+                x--;
+            }
+            x++;       
+         }
+         System.out.println("voici la comatrice de "+i+","+j);
+         c.afficherMatrice();
+         System.out.println(" Voici son determinant "+op.determinant(c));
+         System.out.println("c quoi ce ((-1)puissanc(i+j+2))="+((-1)^(i+j+2)));
+         signe=(int)(Math.pow((-1),i+j+2));
+
+         return ((float)(signe*op.determinant(c)));
+    }
+    
+    
+    public Matrice comatrice(Matrice a){
+        
+        //Matrice b=new Matrice(a.getNbLigne()-1,a.getNbColonne()-1);
+        Matrice com=new Matrice (a.getNbLigne(),a.getNbColonne());
+        OpUnaire co=new OpUnaire();
+        for (int i=0;i<a.getNbLigne();i++){
+            for (int j=0;j<a.getNbColonne();j++){
+                com.remplir_case(com, i, j, co.cofacteur(a, i, j));
+            }
+        }
+        return com;
+    }
+          
+    
+    public Matrice inverse (Matrice a){
+        Matrice b=new Matrice(a.getNbLigne(),a.getNbColonne());
+        OpUnaire op=new OpUnaire();
+        b=op.comatrice(a);
+        b=op.transposeeMatrice(b);
+        for (int i=0;i<b.getNbLigne();i++){
+             for (int j=0;j<b.getNbColonne();j++){
+                 b.remplir_case(b, i, j, b.soustraire_val(b, i, j)/op.determinant(a));
+             }
+          }
+        return b ;
+    }
+    
+    
+    public float conditionnement(Matrice a) {
+        OpUnaire op = new OpUnaire();
+        return op.norme(a)*op.norme(op.inverse(a));
     }
     
 }
